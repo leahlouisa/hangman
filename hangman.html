@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Hangman</title>
+    </head>
+
+    <body>
+        <h1>Let's play hangman!</h1>
+        <input value="" id="letterGuess">
+        <button onclick="hangmanFunction()">Submit</button>
+        <p id="guessedLetters" data-guessedLetters="-init-">Letters already guessed:</p>
+        <p id="currentProgress" data-currentProgress="-init-"></p>
+        <img src="Hangman-0.png" id="Hangman" alt="Hangman" data-secretWord="-init-" data-proximityToDeath="0">
+        <script>
+        function hangmanFunction() {
+            //console.log("JS hangmanFunction is running");
+            var possibleWordsToGuess = ["litigious","benediction","hedgehog","library","portico","doom","candelabra","sympatico","ciao","violin","prestidigitation","vertigo","verdigris","ameliorate","skiing","hoopla","estuary","glove","lute","gloom","impeach","radicalize","hope"];
+            var currentSecretWord = document.getElementById("Hangman").getAttribute("data-secretWord");
+            //console.log("data-secretWord: " + currentSecretWord);
+            if(currentSecretWord === "-init-") {
+                var secretWord = possibleWordsToGuess[Math.floor((Math.random()*100)%(possibleWordsToGuess.length + 1))];
+                document.getElementById("Hangman").setAttribute("data-secretWord", secretWord);
+            } else {
+                secretWord = currentSecretWord;
+            }
+            var currentCurrentProgress = document.getElementById("currentProgress").getAttribute("data-currentProgress");
+            if(currentCurrentProgress === "-init-") {
+                var playersWord = "";
+                for(i=0; i<secretWord.length; i++) {
+                    playersWord += "_";
+                }
+                var status = document.getElementById("currentProgress");
+                status.setAttribute("data-currentProgress", playersWord);
+                status.textContent = "Current progress: " + playersWord;
+            } else {
+                var playersWord = currentCurrentProgress;
+            }
+
+            var playersGuess = document.getElementById("letterGuess").value;
+            var currentGuessedLetters = document.getElementById("guessedLetters").getAttribute("data-guessedLetters");
+            if(currentGuessedLetters === "-init-") {
+                var guessedLetters = [];
+            } else {
+                //console.log("currentGuessedLetters: " + currentGuessedLetters);
+                var guessedLetters = currentGuessedLetters.split(',');
+            }
+
+            var hangmanObj = document.getElementById("Hangman");
+            var bodyParts = hangmanObj.getAttribute("data-proximityToDeath");
+            var status = document.getElementById("currentProgress");
+            status.textContent = "Current progress: " + playersWord;
+
+            if(playersGuess === false || playersGuess === null) {
+                alert("Please enter a single character (I recommend a letter)!");
+                return;
+            } else if(playersGuess.length > 1 || playersGuess.length < 1) {
+                alert("Please enter a single character (I recommend a letter)!");
+                return;
+            } else if(guessedLetters.indexOf(playersGuess) !== -1) {
+                alert("You already guessed that letter!  A body part gets added!");
+                bodyParts++;
+                hangmanObj.setAttribute("data-proximityToDeath",  bodyParts);
+                var newPicName = "Hangman-" + bodyParts + ".png";
+                var pic = document.getElementById("Hangman");
+                pic.src = newPicName;
+                if(bodyParts === 8) {
+                    alert("You died!  The word was " + currentSecretWord);
+                    location.reload();
+                }
+                return;
+            } else if(secretWord.indexOf(playersGuess) === -1) {
+                alert("That letter isn't in the secret word.  A body part gets added!");
+                bodyParts++;
+                hangmanObj.setAttribute("data-proximityToDeath",  bodyParts);
+                var newPicName = "Hangman-" + bodyParts + ".png";
+                var pic = document.getElementById("Hangman");
+                pic.src = newPicName;
+                guessedLetters.push(playersGuess);
+                var newGuessedLetters = "Letters already guessed: " + guessedLetters.join(",");
+                var guessyLetters = document.getElementById("guessedLetters");
+                guessyLetters.textContent = newGuessedLetters;
+                guessyLetters.setAttribute("data-guessedLetters",guessedLetters);
+                if(bodyParts === 8) {
+                    alert("You died!  The word was " + currentSecretWord);
+                    location.reload();
+                }
+                return;
+            } else {
+                var tempReplacementWord = "";
+                for(i=0; i<playersWord.length; i++) {
+                    if(playersWord[i] !== "_") {
+                        tempReplacementWord = tempReplacementWord + playersWord[i];
+                    } else if(secretWord[i] === playersGuess) {
+                        tempReplacementWord = tempReplacementWord + playersGuess;
+                        //playersWord[i] = playersGuess;
+                    } else {
+                        tempReplacementWord = tempReplacementWord + "_";
+                    }
+                } 
+                playersWord = tempReplacementWord;
+                if(playersWord.indexOf("_") !== -1) {
+                    alert("Nice guess of " + playersGuess + ".  Your current progress is " + playersWord);
+                    guessedLetters.push(playersGuess);
+                    var newGuessedLetters = "Letters already guessed: " + guessedLetters.join(",");
+                    var guessyLetters = document.getElementById("guessedLetters");
+                    guessyLetters.textContent = newGuessedLetters;
+                    guessyLetters.setAttribute("data-guessedLetters",guessedLetters);
+                    var status = document.getElementById("currentProgress");
+                    status.textContent = "Current progress: " + playersWord;
+                    status.setAttribute("data-currentProgress",playersWord);
+                    return;
+                } else {
+                    alert("You win!!! Great job!!!!!  The word was " + currentSecretWord);
+                    guessedLetters.push(playersGuess);
+                    var newGuessedLetters = "Letters already guessed: " + guessedLetters.join(",");
+                    var guessyLetters = document.getElementById("guessedLetters");
+                    guessyLetters.textContent = newGuessedLetters;
+                    guessyLetters.setAttribute("data-guessedLetters",guessedLetters);
+                    var status = document.getElementById("currentProgress");
+                    status.textContent = "Current progress: " + playersWord;
+                    status.setAttribute("data-currentProgress",playersWord);
+                    location.reload();
+                    return;
+                }
+            }
+            
+            
+            
+            
+            
+            
+        }
+        </script>
+    </body>
+</html>
