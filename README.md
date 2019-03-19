@@ -1,0 +1,2 @@
+# hangman
+Just learning JS
