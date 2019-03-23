@@ -4,7 +4,7 @@
         <title>Hangman</title>
     </head>
 
-    <body>
+    <body onload=initializeHangman()>
         <h1>Let's play hangman!</h1>
         <input value="" id="letterGuess">
         <button onclick="hangmanFunction()">Submit</button>
@@ -12,12 +12,90 @@
         <p id="currentProgress" data-currentProgress="-init-"></p>
         <img src="Hangman-0.png" id="Hangman" alt="Hangman" data-secretWord="-init-" data-proximityToDeath="0">
         <script>
+        function initializeHangman() {
+            //console.log("Initializing Hangman");
+            var currentSecretWord = document.getElementById("Hangman").getAttribute("data-secretWord");
+            if(currentSecretWord === "-init-") {
+                //console.log("inside the first if");
+                var alphabet = "abcdefghijklmnopqrstuvwxyz"
+                var randomLetter = alphabet[Math.floor(Math.random()*100%27)];
+                var apiUrl = "https://api.datamuse.com/words?sp=" + randomLetter + "*&bpl=vcb&scwo=1&sswo=0?c=customize#crossword"
+                var wordApiCallResults = fetch(apiUrl);
+                var wordApiCallIntermediateObject = wordApiCallResults.then(function(response) 
+                    { return response.json();});
+                wordApiCallIntermediateObject.then(function(myJson) {
+                    var counter = 0;
+                    //var wordApiCallJson = wordApiCallIntermediateObject.then(function(myJson) { return JSON.stringify(myJson);});
+                    while(currentSecretWord=== "-init-" && counter<5) {
+                        //console.log("data-secretWord: " + document.getElementById("Hangman").getAttribute("data-secretWord"));
+                        counter++;
+                        //console.log("Words: " + myJson[0]);
+                        var randomWord = myJson[Math.floor((Math.random()*100)%(myJson.length + 1))].word;
+                        //console.log("randomWord: " + randomWord);
+                        if(randomWord.indexOf("-") === -1) {
+                            document.getElementById("Hangman").setAttribute("data-secretWord",randomWord);
+                            var didThisThingGetSet = document.getElementById("Hangman").getAttribute("data-secretWord");
+                            //console.log("didThisThingGetSet: " + didThisThingGetSet);
+                        }
+                        currentSecretWord = document.getElementById("Hangman").getAttribute("data-secretWord");
+                        //console.log("currentSecretWord: " + currentSecretWord);
+                    }
+                });
+
+
+
+
+                /*
+                //console.log(wordApiCallIntermediateObject);
+                //console.log(currentSecretWord);
+                var counter = 0;
+                //var wordApiCallJson = wordApiCallIntermediateObject.then(function(myJson) { return JSON.stringify(myJson);});
+                while(document.getElementById("Hangman").getAttribute("data-secretWord")=== "-init-" && counter<5) {
+                    console.log("data-secretWord: " + document.getElementById("Hangman").getAttribute("data-secretWord"));
+                    counter++;
+                    //console.log("inside while");
+                    var wordApiCallJson = wordApiCallIntermediateObject.then(function(myJson) {
+                        //var Words = JSON.stringify(myJson);
+                        console.log("Words: " + myJson[0]);
+                        var randomWord = myJson[Math.floor((Math.random()*100)%(myJson.length + 1))].word;
+                        console.log("randomWord: " + randomWord);
+                        if(randomWord.indexOf("-") === -1) {
+                            document.getElementById("Hangman").setAttribute("data-secretWord",randomWord);
+                            var didThisThingGetSet = document.getElementById("Hangman").getAttribute("data-secretWord");
+                            console.log("didThisThingGetSet: " + didThisThingGetSet);
+                        }
+                    });
+                    currentSecretWord = document.getElementById("Hangman").getAttribute("data-secretWord");
+                    console.log("currentSecretWord: " + currentSecretWord);
+                }
+                */
+            }
+        }
         function hangmanFunction() {
-            //console.log("JS hangmanFunction is running");
             var possibleWordsToGuess = ["litigious","benediction","hedgehog","library","portico","doom","candelabra","sympatico","ciao","violin","prestidigitation","vertigo","verdigris","ameliorate","skiing","hoopla","estuary","glove","lute","gloom","impeach","radicalize","hope"];
             var currentSecretWord = document.getElementById("Hangman").getAttribute("data-secretWord");
             //console.log("data-secretWord: " + currentSecretWord);
             if(currentSecretWord === "-init-") {
+                var alphabet = "abcdefghijklmnopqrstuvwxyz"
+                var randomLetter = alphabet[Math.floor(Math.random()*100%27)];
+                var apiUrl = "https://api.datamuse.com/words?sp=" + randomLetter + "*&bpl=vcb&scwo=1&sswo=0?c=customize#crossword"
+                var wordApiCallResults = fetch(apiUrl);
+                var wordApiCallIntermediateObject = wordApiCallResults.then(function(response) 
+                    { return response.json();});
+                var wordApiCallJson = wordApiCallIntermediateObject.then(function(myJson) { return JSON.stringify(myJson);});
+                //var giveMeAWord = wordApiCallJson.resolve();
+
+                console.log(wordApiCallResults);
+                console.log(wordApiCallIntermediateObject);
+                console.log(wordApiCallJson);
+                //console.log(wordApiCallResults[0]);
+
+                //wordApiCallResults.then(function(response) {
+  //return response.json()}).then(function(myJson) {
+   // return JSON.stringify(myJson);});
+                //.then(function(response) { return response.json();}).then(function(myJson) { console.log(JSON.stringify(myJson));})
+
+
                 var secretWord = possibleWordsToGuess[Math.floor((Math.random()*100)%(possibleWordsToGuess.length + 1))];
                 document.getElementById("Hangman").setAttribute("data-secretWord", secretWord);
             } else {
